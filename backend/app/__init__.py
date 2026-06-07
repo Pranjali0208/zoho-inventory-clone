@@ -5,13 +5,17 @@ from flask_cors import CORS
 from flask_session import Session
 
 from dotenv import load_dotenv
-
+from flask_migrate import Migrate
 import os
-
+from app.api.product_api import product_bp
+from app.api.supplier_api import supplier_bp
 from app.config.db import db
-
+from app.api.analytics_api import analytics_bp
 from app.api.auth_api import auth_bp
-
+from app.api.invoice_api import invoice_bp
+from app.api.dashboard_api import dashboard_bp
+from app.api.inventory_transaction_api import (inventory_transaction_bp)
+migrate = Migrate()
 
 load_dotenv()
 
@@ -45,6 +49,7 @@ def create_app():
 
 
     db.init_app(app)
+    migrate.init_app(app, db)
 
 
     CORS(
@@ -59,5 +64,11 @@ def create_app():
 
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(invoice_bp)
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(analytics_bp)
+    app.register_blueprint(supplier_bp)
+    app.register_blueprint(inventory_transaction_bp)
+    app.register_blueprint(product_bp)
 
     return app

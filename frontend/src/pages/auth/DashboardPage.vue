@@ -1,57 +1,72 @@
 <template>
-  <div class="dashboard-page">
-    <q-card class="dashboard-card">
-      <div class="text-h4 text-weight-bold">FleetFlow Dashboard</div>
+  <q-page class="q-pa-md">
+    <div class="text-h4 text-weight-bold q-mb-lg">Dashboard</div>
 
-      <div class="q-mt-md">
-        Welcome,
-        {{ authStore.user?.name }}
+    <div class="row q-col-gutter-md">
+      <div class="col-12 col-md-3">
+        <q-card>
+          <q-card-section>
+            <div class="text-grey">Products</div>
+
+            <div class="text-h4">
+              {{ dashboard.total_products }}
+            </div>
+          </q-card-section>
+        </q-card>
       </div>
 
-      <div class="q-mt-sm">
-        Role:
-        {{ authStore.user?.role }}
+      <div class="col-12 col-md-3">
+        <q-card>
+          <q-card-section>
+            <div class="text-grey">Customers</div>
+
+            <div class="text-h4">
+              {{ dashboard.total_customers }}
+            </div>
+          </q-card-section>
+        </q-card>
       </div>
 
-      <q-btn label="Logout" color="negative" class="q-mt-lg" @click="logout" />
-    </q-card>
-  </div>
+      <div class="col-12 col-md-3">
+        <q-card>
+          <q-card-section>
+            <div class="text-grey">Invoices</div>
+
+            <div class="text-h4">
+              {{ dashboard.total_invoices }}
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div class="col-12 col-md-3">
+        <q-card>
+          <q-card-section>
+            <div class="text-grey">Revenue</div>
+
+            <div class="text-h4">OMR {{ dashboard.total_revenue }}</div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+  </q-page>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
-import { useAuthStore } from 'src/stores/auth-store'
+const dashboard = ref({})
 
-const router = useRouter()
+const loadDashboard = async () => {
+  const response = await axios.get('/api/dashboard/summary', {
+    withCredentials: true,
+  })
 
-const authStore = useAuthStore()
-
-const logout = () => {
-  authStore.logout()
-
-  router.push('/login')
+  dashboard.value = response.data
 }
+
+onMounted(() => {
+  loadDashboard()
+})
 </script>
-
-<style scoped>
-.dashboard-page {
-  height: 100vh;
-
-  display: flex;
-
-  justify-content: center;
-
-  align-items: center;
-
-  background: #f4f7fe;
-}
-
-.dashboard-card {
-  width: 500px;
-
-  padding: 30px;
-
-  border-radius: 12px;
-}
-</style>
